@@ -4840,38 +4840,39 @@ vertical-align: -.125em;
 <h1>Practice</h1>
 <section id="visualizing-a-single-distribution---단일-분포-상태의-시각화" class="level2">
 <h2 class="anchored" data-anchor-id="visualizing-a-single-distribution---단일-분포-상태의-시각화">7.1 Visualizing a single distribution - 단일 분포 상태의 시각화</h2>
-<p>공공데이터포털 &gt; 행정안전부_지역별(법정동) 성별 연령별 주민등록 인구수 - https://www.data.go.kr/data/15099158/fileData.do</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>data_age_raw <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&#39;./data/행정안전부_지역별(법정동) 성별 연령별 주민등록 인구수_20230430.csv&#39;</span>, <span class="at">fileEncoding =</span> <span class="st">&#39;CP949&#39;</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 자료형 변경</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>data_age_raw<span class="sc">$</span>법정동코드 <span class="ot">&lt;-</span> data_age_raw<span class="sc">$</span>법정동코드 <span class="sc">%&gt;%</span> <span class="fu">as.character</span>() <span class="co"># numeric -&gt; character</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Reshape</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>measure_col <span class="ot">&lt;-</span> <span class="fu">names</span>(data_age_raw)[<span class="dv">10</span> <span class="sc">:</span> <span class="fu">ncol</span>(data_age_raw)]</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>data_age_melt <span class="ot">&lt;-</span> data_age_raw <span class="sc">%&gt;%</span> </span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>기준연월, <span class="sc">-</span>(시군구명<span class="sc">:</span>여자)) <span class="sc">%&gt;%</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(시도명 <span class="sc">==</span> <span class="st">&#39;대전광역시&#39;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  reshape2<span class="sc">::</span><span class="fu">melt</span>(<span class="at">id.vars =</span> <span class="fu">c</span>(<span class="st">&#39;법정동코드&#39;</span>, <span class="st">&#39;시도명&#39;</span>),</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>                 <span class="at">measure.vars =</span> measure_col,</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>                 <span class="at">variable.name =</span> <span class="st">&#39;나이_성별&#39;</span>,</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>                 <span class="at">value.name =</span> <span class="st">&#39;인구수&#39;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(나이_성별 <span class="ot">=</span> <span class="fu">as.character</span>(나이_성별)) <span class="co"># factor -&gt; character</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 나이 성별 분리</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>data_age_melt <span class="ot">&lt;-</span> data_age_melt <span class="sc">%&gt;%</span> </span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">age =</span> <span class="fu">gsub</span>(<span class="st">&#39;</span><span class="sc">\\</span><span class="st">D&#39;</span>,<span class="st">&#39;&#39;</span>, 나이_성별) <span class="sc">%&gt;%</span> <span class="fu">as.integer</span>(),</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">sex =</span> <span class="fu">substring</span>(나이_성별, <span class="fu">nchar</span>(나이_성별) <span class="sc">-</span> <span class="dv">1</span>, <span class="fu">nchar</span>(나이_성별)))</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="co"># 연령대</span></span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>age_len <span class="ot">&lt;-</span> <span class="dv">5</span></span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>data_age_cat <span class="ot">&lt;-</span> data_age_melt <span class="sc">%&gt;%</span></span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">age_cat =</span> <span class="fu">cut</span>(age <span class="sc">+</span> <span class="fl">0.1</span>, <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">120</span>, age_len), <span class="at">labels =</span> F)) <span class="sc">%&gt;%</span></span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span> (age_cat) <span class="sc">%&gt;%</span></span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">count =</span> <span class="fu">sum</span> (인구수))</span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>data_age_cat<span class="sc">$</span>age_cat <span class="ot">&lt;-</span> age_len<span class="sc">*</span>(data_age_cat<span class="sc">$</span>age_cat <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">+</span> age_len<span class="sc">/</span><span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 공공데이터포털 &gt; 행정안전부_지역별(법정동) 성별 연령별 주민등록 인구수</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># https://www.data.go.kr/data/15099158/fileData.do</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>data_age_raw <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&#39;./data/행정안전부_지역별(법정동) 성별 연령별 주민등록 인구수_20230430.csv&#39;</span>, <span class="at">fileEncoding =</span> <span class="st">&#39;CP949&#39;</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 자료형 변경</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>data_age_raw<span class="sc">$</span>법정동코드 <span class="ot">&lt;-</span> data_age_raw<span class="sc">$</span>법정동코드 <span class="sc">%&gt;%</span> <span class="fu">as.character</span>() <span class="co"># numeric -&gt; character</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Reshape</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>measure_col <span class="ot">&lt;-</span> <span class="fu">names</span>(data_age_raw)[<span class="dv">10</span> <span class="sc">:</span> <span class="fu">ncol</span>(data_age_raw)]</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>data_age_melt <span class="ot">&lt;-</span> data_age_raw <span class="sc">%&gt;%</span> </span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>기준연월, <span class="sc">-</span>(시군구명<span class="sc">:</span>여자)) <span class="sc">%&gt;%</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(시도명 <span class="sc">==</span> <span class="st">&#39;대전광역시&#39;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  reshape2<span class="sc">::</span><span class="fu">melt</span>(<span class="at">id.vars =</span> <span class="fu">c</span>(<span class="st">&#39;법정동코드&#39;</span>, <span class="st">&#39;시도명&#39;</span>),</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>                 <span class="at">measure.vars =</span> measure_col,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>                 <span class="at">variable.name =</span> <span class="st">&#39;나이_성별&#39;</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>                 <span class="at">value.name =</span> <span class="st">&#39;인구수&#39;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(나이_성별 <span class="ot">=</span> <span class="fu">as.character</span>(나이_성별)) <span class="co"># factor -&gt; character</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co"># 나이 성별 분리</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>data_age_melt <span class="ot">&lt;-</span> data_age_melt <span class="sc">%&gt;%</span> </span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">age =</span> <span class="fu">gsub</span>(<span class="st">&#39;</span><span class="sc">\\</span><span class="st">D&#39;</span>,<span class="st">&#39;&#39;</span>, 나이_성별) <span class="sc">%&gt;%</span> <span class="fu">as.integer</span>(),</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>         <span class="at">sex =</span> <span class="fu">substring</span>(나이_성별, <span class="fu">nchar</span>(나이_성별) <span class="sc">-</span> <span class="dv">1</span>, <span class="fu">nchar</span>(나이_성별)))</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="co"># 연령대</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>age_len <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>data_age_cat <span class="ot">&lt;-</span> data_age_melt <span class="sc">%&gt;%</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">age_cat =</span> <span class="fu">cut</span>(age <span class="sc">+</span> <span class="fl">0.1</span>, <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">120</span>, age_len), <span class="at">labels =</span> F)) <span class="sc">%&gt;%</span></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span> (age_cat) <span class="sc">%&gt;%</span></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">count =</span> <span class="fu">sum</span> (인구수))</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>data_age_cat<span class="sc">$</span>age_cat <span class="ot">&lt;-</span> age_len<span class="sc">*</span>(data_age_cat<span class="sc">$</span>age_cat <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">+</span> age_len<span class="sc">/</span><span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="figure-7.1-1" class="level3">
 <h3 class="anchored" data-anchor-id="figure-7.1-1">Figure 7.1</h3>
