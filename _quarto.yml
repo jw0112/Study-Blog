@@ -3,7 +3,7 @@ project:
   output-dir: docs
 
 website:
-  title: "Jinwon Lee"
+  title: 'Jinwon Lee'
  
   navbar:
     left:
@@ -21,10 +21,14 @@ website:
         href: https://github.com/jw0112
 
   sidebar:
-    style: "docked"
+    style: 'docked'
     search: true
     contents: 
-      - section: "Study"
+      - section: 'Profile'
+        contents: 
+        - index.qmd
+      
+      - section: 'Study'
         contents:
         - Data_Mining.qmd
         - R_Basic.qmd
@@ -35,7 +39,7 @@ website:
         - BigData_Analysis.qmd
 
     page-footer: 
-      left: "Made by Quarto"
+      left: 'Made by Quarto'
 
 format:
   html:
