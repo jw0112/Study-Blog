@@ -4,27 +4,47 @@ project:
 
 website:
   title: "Jinwon Lee"
+ 
   navbar:
     left:
       - index.qmd
-      - Project.qmd
       - Data_Mining.qmd
+      - R_Basic.qmd
       - Data_Visualization.qmd
-      - Certification.qmd
+      - Data_Exploration.qmd
+      - Spatial_Information_Analysis.qmd
+      - OpenData_Analysis.qmd
+      - BigData_Analysis.qmd
 
     right:
       - icon: github
         href: https://github.com/jw0112
+
+  sidebar:
+    style: "docked"
+    search: true
+    contents: 
+      - section: "Study"
+        contents:
+        - Data_Mining.qmd
+        - R_Basic.qmd
+        - Data_Visualization.qmd
+        - Data_Exploration.qmd
+        - Spatial_Information_Analysis.qmd
+        - OpenData_Analysis.qmd
+        - BigData_Analysis.qmd
+
     page-footer: 
       left: "Made by Quarto"
+
 format:
   html:
     theme: minty
     toc: true
     self-contained: true
     smooth-scroll: true
-    code-fold: true
-    # code-tools: true
+    # code-fold: true
+    code-tools: true
     # toc-depth : 5
     # number-sections: true
     css: styles.css
